@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:alpine
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_USER: example
+
+  app:
+    image: node:alpine
+    ports:
+      - 3000:3000
+    entrypoint: "npm start --prefix /home/node/app"
+    volumes:
+      - .:/home/node/app
