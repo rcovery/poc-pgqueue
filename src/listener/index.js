@@ -8,15 +8,17 @@ import { WhatsAppListener } from './WhatsApp/whatsapp.listener.js';
 import { ParalelepipedoListener } from './Paralelepipedo/paralelepipedo.listener.js';
 
 const { Client } = pg_pkg;
+const client = new Client(DB_CONFIG);
+client.connect();
 
 /**
  * @param {ListenerInterface} ListenerInstance
 */
 function register(ListenerInstance) {
-    const client = new Client(DB_CONFIG);
-    client.connect();
     client.query(`LISTEN "${ListenerInstance.name}"`);
-    client.on('notification', ({ payload }) => {
+    client.on('notification', ({ channel, payload }) => {
+        if (channel != ListenerInstance.name) return;
+
         ListenerInstance.parse_channel_data(payload);
         ListenerInstance.execute();
     });
